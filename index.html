@@ -313,19 +313,19 @@
   </section>
 
   <!-- STATISTICS -->
-  <section class="bg-[#00134C] text-white py-16">
+  <section class="bg-[#00134C] text-white py-16" id="stats">
     <h2 class="text-white mb-12 font-semibold text-xl md:text-5xl text-center">We’re in the business of growing businesses.</h2>
     <div class="max-w-7xl mx-auto py-10 px-6 flex flex-col md:flex-row justify-around space-y-12 md:space-y-0 text-center md:text-left text-sm md:text-base">
       <div class="max-w-xs text-center">
-        <h3 class="text-5xl md:text-8xl font-bold leading-none mb-2 text-[#668CFF]">90%</h3>
+        <h3 class="text-5xl md:text-8xl font-bold leading-none mb-2 text-[#668CFF]" id="count1">90%</h3>
         <p class="md:text-2xl max-w-[280px]">of users say Team Inc. helps them stay more connected and aligned.</p>
       </div>
       <div class="max-w-xs text-center">
-        <h3 class="text-5xl md:text-8xl font-bold leading-none mb-2 text-[#668CFF]">43</h3>
+        <h3 class="text-5xl md:text-8xl font-bold leading-none mb-2 text-[#668CFF]" id="count2">43</h3>
         <p class="md:text-2xl max-w-[280px]">The average number of apps used by teams in Team Inc.</p>
       </div>
       <div class="max-w-xs text-center">
-        <h3 class="text-5xl md:text-8xl font-bold leading-none mb-2 text-[#668CFF]">87%</h3>
+        <h3 class="text-5xl md:text-8xl font-bold leading-none mb-2 text-[#668CFF]" id="count3">87%</h3>
         <p class="md:text-2xl max-w-[280px]">of users say Team Inc. helps their team to collaborate efficiently.</p>
       </div>
     </div>
@@ -449,6 +449,53 @@
       alert('Thank you for contacting our sales team. We will get back to you shortly.');
       form.reset();
     });
+
+  // Function to animate numbers from 0 to target value
+  function animateCount(id, target, duration = 2000, isPercent = false) {
+    const element = document.getElementById(id);
+    let start = 0;
+    const startTimestamp = performance.now();
+
+    const step = (timestamp) => {
+      const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+      const value = Math.floor(progress * target);
+      element.textContent = value + (isPercent ? '%' : '');
+
+      if (progress < 1) {
+        requestAnimationFrame(step);
+      } else {
+        // Ensure final value is exact
+        element.textContent = target + (isPercent ? '%' : '');
+      }
+    };
+
+    requestAnimationFrame(step);
+  }
+
+  // Intersection observer callback
+  function handleIntersect(entries, observer) {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        // Animate each count only once
+        animateCount('count1', 90, 2000, true);
+        animateCount('count2', 43, 2000, false);
+        animateCount('count3', 87, 2000, true);
+
+        observer.unobserve(entry.target); // Stop observing after animation
+      }
+    });
+  }
+
+  // Initialize observer
+  document.addEventListener('DOMContentLoaded', () => {
+    const section = document.getElementById('stats');
+    const observerOptions = {
+      root: null,
+      threshold: 0.1 // trigger when 10% visible
+    };
+    const observer = new IntersectionObserver(handleIntersect, observerOptions);
+    observer.observe(section);
+  });
 
   </script>
 
